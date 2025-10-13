@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6b40d8, #4a90e2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 35px 45px;
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            width: 350px;
+            max-width: 90%;
+            text-align: center;
+            color: #fff;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            font-weight: 500;
+            font-size: 1.8rem;
+        }
+
+        form div {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            box-sizing: border-box;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #ffffff;
+            color: #333;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #f1f1f1;
+            transform: scale(1.03);
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #eaeaea;
+        }
+
+        code {
+            display: inline-block;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 6px;
+            border-radius: 5px;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form method="post" action="/login">
+            <div>
+                <label>Username</label>
+                <input name="username" required>
+            </div>
+            <div>
+                <label>Password</label>
+                <input name="password" type="password" required>
+            </div>
+            <div>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+
+        <p>
+            No account? Register via <code>/api/auth/register</code><br>
+            JSON: <code>{"username":"...", "email":"...", "password":"..."}</code>
+        </p>
+    </div>
+</body>
+
+</html>

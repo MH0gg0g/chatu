@@ -1,0 +1,263 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Chat</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+    }
+
+    #sidebar {
+      width: 250px;
+      background: #f4f4f4;
+      border-right: 1px solid #ccc;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    #sidebar h3 {
+      margin-top: 0;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      margin: 6px 0;
+      padding: 4px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .user-item:hover {
+      background: #e2e2e2;
+    }
+
+    .user-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      background-color: #00c851;
+    }
+
+    .group-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      background-color: #ffbb33;
+    }
+
+    #main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    h2,
+    h3 {
+      margin-top: 0;
+    }
+
+    .message-area {
+      border: 1px solid #ccc;
+      padding: 8px;
+      min-height: 120px;
+      max-width: 800px;
+      overflow-y: auto;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 6px;
+      margin-right: 6px;
+    }
+
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+      background-color: #007bff;
+      border: none;
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .section {
+      max-width: 800px;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sidebar">
+    <h3>Online Users</h3>
+    <ul id="onlineUsersList" style="list-style:none; padding:0; margin:0;"></ul>
+    <h3>Active Groups</h3>
+    <ul id="activeGroupsList" style="list-style:none; padding:0; margin:0;"></ul>
+  </div>
+
+  <div id="main">
+    <h2>Chat</h2>
+    <div>Logged in as: <span th:text="${me.username}">USER</span></div>
+
+    <div class="section">
+      <h3>Private message</h3>
+      <div>
+        To username: <input id="toUser" type="text" />
+        <button onclick="connectPrivate()">Connect & Subscribe</button>
+      </div>
+      <div id="privateMessages" class="message-area"></div>
+      <input id="privateMsg" type="text" placeholder="Type private message..." />
+      <button onclick="sendPrivate()">Send Private</button>
+    </div>
+
+    <div class="section">
+      <h3>Group message</h3>
+      <div>
+        Group id: <input id="groupId" type="text" value="1" />
+        <button onclick="subscribeGroup()">Subscribe to Group</button>
+      </div>
+      <div id="groupMessages" class="message-area"></div>
+      <input id="groupMsg" type="text" placeholder="Type group message..." />
+      <button onclick="sendGroup()">Send Group</button>
+    </div>
+  </div>
+
+  <script>
+    let stompClient = null;
+
+    function connect() {
+      if (stompClient && stompClient.connected) return;
+      const socket = new SockJS('/ws/chat');
+      stompClient = Stomp.over(socket);
+      stompClient.debug = null;
+      stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/user/queue/private', function (message) {
+          showPrivate(JSON.parse(message.body));
+        });
+      }, function (err) {
+        console.error('STOMP error', err);
+      });
+    }
+
+    function connectPrivate() {
+      connect();
+      alert('Ready to send private messages. Use the "To username" input.');
+    }
+
+    function sendPrivate() {
+      const to = document.getElementById('toUser').value;
+      const content = document.getElementById('privateMsg').value;
+      if (!to || !content) {
+        alert('to and content required');
+        return;
+      }
+      stompClient.send('/app/private.send', {}, JSON.stringify({ to: to, content: content }));
+      document.getElementById('privateMsg').value = '';
+    }
+
+    function showPrivate(payload) {
+      const area = document.getElementById('privateMessages');
+      const div = document.createElement('div');
+      div.innerText = payload.from + ': ' + payload.content + ' (' + payload.timestamp + ')';
+      area.appendChild(div);
+    }
+
+    function subscribeGroup() {
+      connect();
+      const gid = document.getElementById('groupId').value;
+      stompClient.subscribe('/topic/group.' + gid, function (message) {
+        showGroup(JSON.parse(message.body));
+      });
+      alert('Subscribed to group ' + gid);
+    }
+
+    function sendGroup() {
+      const gid = document.getElementById('groupId').value;
+      const content = document.getElementById('groupMsg').value;
+      if (!gid || !content) {
+        alert('groupId and content required');
+        return;
+      }
+      stompClient.send('/app/group.send', {}, JSON.stringify({ groupId: gid, content: content }));
+      document.getElementById('groupMsg').value = '';
+    }
+
+    function showGroup(payload) {
+      const area = document.getElementById('groupMessages');
+      const div = document.createElement('div');
+      div.innerText = payload.from + ': ' + payload.content + ' (' + payload.timestamp + ')';
+      area.appendChild(div);
+    }
+
+
+    function selectUser(username) {
+      document.getElementById('toUser').value = username;
+    }
+
+    function selectGroup(groupId) {
+      document.getElementById('groupId').value = groupId;
+    }
+
+    function fetchOnlineUsers() {
+      fetch('/online-users')
+        .then(res => res.json())
+        .then(users => {
+          const list = document.getElementById('onlineUsersList');
+          list.innerHTML = '';
+          users.forEach(u => {
+            const li = document.createElement('li');
+            li.className = 'user-item';
+            li.innerHTML = '<span class="user-status-dot"></span>' + u;
+            li.onclick = () => selectUser(u);
+            list.appendChild(li);
+          });
+        })
+        .catch(err => console.error('Failed to fetch online users:', err));
+    }
+
+    function fetchActiveGroups() {
+      fetch('/active-groups')
+        .then(res => res.json())
+        .then(groups => {
+          const list = document.getElementById('activeGroupsList');
+          list.innerHTML = '';
+          Object.entries(groups).forEach(([groupId, memberCount]) => {
+            const li = document.createElement('li');
+            li.className = 'user-item';
+            li.innerHTML = '<span class="group-status-dot"></span>' + groupId + ' (' + memberCount + ' members)';
+            li.onclick = () => selectGroup(groupId);
+            list.appendChild(li);
+          });
+        })
+        .catch(err => console.error('Failed to fetch active groups:', err));
+    }
+
+    window.addEventListener('load', () => {
+      connect();
+      fetchOnlineUsers();
+      fetchActiveGroups();
+      setInterval(fetchOnlineUsers, 5000);
+      setInterval(fetchActiveGroups, 5000);
+    });
+  </script>
+</body>
+
+</html>
