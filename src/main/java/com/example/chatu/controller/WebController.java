@@ -14,13 +14,13 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WebController {
     private final UserService userService;
-
-    @GetMapping({ "/", "/index" })
-    public String index() {
-        return "index";
+    
+    @GetMapping("/register")
+    public String showRegisterPage() {
+        return "register";
     }
 
-    @GetMapping("/login")
+    @GetMapping({"/", "/index", "/login"})
     public String login() {
         return "login";
     }
