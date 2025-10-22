@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WebSocketTracker {
 
-    private OnlineUserService onlineUserService;
+    private final OnlineUserService onlineUserService;
     private final ActiveGroupService activeGroupService;
 
     @EventListener
