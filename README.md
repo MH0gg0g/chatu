@@ -2,6 +2,10 @@
 
 Chatu is a lightweight (group & private) chat web application built with Spring Boot, WebSocket (STOMP), and Thymeleaf. It demonstrates real-time messaging, simple user authentication.
 
+## Video overview
+
+Youtube - https://youtu.be/qPlxhEYPFOY
+
 ## Project overview
 
 This repository contains a Spring Boot application that provides a real-time chat interface using WebSocket/STOMP for message transport and Thymeleaf templates for the UI. It includes simple user management (registration/login), online user tracking, active group listing, and controllers/services to handle messaging and presence.
