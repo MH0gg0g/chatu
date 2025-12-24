@@ -1,4 +1,4 @@
-package com.example.chatu.controller;
+package com.example.chatu.message;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -9,26 +9,23 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
-import com.example.chatu.dto.GroupMessageDTO;
-import com.example.chatu.dto.PrivateMessageDTO;
-import com.example.chatu.service.ActiveGroupService;
-import com.example.chatu.service.UserService;
+import com.example.chatu.group.ActiveGroupService;
+import com.example.chatu.user.UserService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
+
 @Controller
 @AllArgsConstructor
-@Validated
 public class MessageController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ActiveGroupService activeGroupService;
     private final UserService userService;
 
-    @MessageMapping("/private.send")
+    @MessageMapping("/private.send") // Frontend sends to /app/private.send
     public void sendPrivate(@Payload @Valid PrivateMessageDTO payload, Principal principal) {
         String toUsername = payload.getTo();
         String content = payload.getContent();

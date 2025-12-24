@@ -1,11 +1,9 @@
-package com.example.chatu.controller;
+package com.example.chatu.user;
 
 import java.util.Set;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.chatu.service.OnlineUserService;
 
 import lombok.AllArgsConstructor;
 

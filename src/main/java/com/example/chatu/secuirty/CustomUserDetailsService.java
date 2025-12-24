@@ -1,4 +1,4 @@
-package com.example.chatu.service;
+package com.example.chatu.secuirty;
 
 import java.util.Collections;
 
@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.chatu.repository.UserRepository;
+import com.example.chatu.user.UserRepository;
 
 import lombok.AllArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.example.chatu.service;
+package com.example.chatu.user;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

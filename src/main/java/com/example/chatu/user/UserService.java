@@ -1,12 +1,9 @@
-package com.example.chatu.service;
+package com.example.chatu.user;
 
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.example.chatu.entity.User;
-import com.example.chatu.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -17,6 +14,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User register(String username, String email, String rawPassword) {
+        if (findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+        if (findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("Username is already in use");
+        }
+
         User user = User.builder()
                 .username(username)
                 .email(email)
@@ -29,7 +33,7 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public Optional<User> findByemail(String email) {
+    public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 }
