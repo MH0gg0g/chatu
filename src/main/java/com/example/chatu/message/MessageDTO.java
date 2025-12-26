@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class PrivateMessageDTO {
+public class MessageDTO {
 
     @NotBlank
-    private String to;
+    private String id;
 
     @NotBlank
     @Size(max = 2000)

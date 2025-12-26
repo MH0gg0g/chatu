@@ -16,7 +16,6 @@ import com.example.chatu.user.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-
 @Controller
 @AllArgsConstructor
 public class MessageController {
@@ -26,8 +25,8 @@ public class MessageController {
     private final UserService userService;
 
     @MessageMapping("/private.send") // Frontend sends to /app/private.send
-    public void sendPrivate(@Payload @Valid PrivateMessageDTO payload, Principal principal) {
-        String toUsername = payload.getTo();
+    public void sendPrivate(@Payload @Valid MessageDTO payload, Principal principal) {
+        String toUsername = payload.getId();
         String content = payload.getContent();
 
         if (principal == null)
@@ -49,8 +48,8 @@ public class MessageController {
     }
 
     @MessageMapping("/group.send")
-    public void sendGroup(@Payload @Valid GroupMessageDTO payload, Principal principal) {
-        String groupId = payload.getGroupId();
+    public void sendGroup(@Payload @Valid MessageDTO payload, Principal principal) {
+        String groupId = payload.getId();
         String content = payload.getContent();
 
         if (principal == null)
